@@ -1,11 +1,13 @@
 import * as fc from 'fast-check'
-import { Setoid } from 'fp-ts/lib/Setoid'
-import { Ord } from 'fp-ts/lib/Ord'
-import { Semigroup } from 'fp-ts/lib/Semigroup'
-import { Monoid } from 'fp-ts/lib/Monoid'
-import { Semiring } from 'fp-ts/lib/Semiring'
-import { Ring } from 'fp-ts/lib/Ring'
 import { Field } from 'fp-ts/lib/Field'
+import { Functor, Functor1, Functor2, Functor2C, Functor3, Functor3C } from 'fp-ts/lib/Functor'
+import { HKT, Type, Type2, Type3, URIS, URIS2, URIS3 } from 'fp-ts/lib/HKT'
+import { Monoid } from 'fp-ts/lib/Monoid'
+import { Ord } from 'fp-ts/lib/Ord'
+import { Ring } from 'fp-ts/lib/Ring'
+import { Semigroup } from 'fp-ts/lib/Semigroup'
+import { Semiring } from 'fp-ts/lib/Semiring'
+import { Setoid, setoidBoolean, setoidNumber, setoidString } from 'fp-ts/lib/Setoid'
 
 /**
  * Tests the `Setoid` laws
@@ -162,4 +164,48 @@ export const field = <A>(F: Field<A>, S: Setoid<A>, arb: fc.Arbitrary<A>, seed?:
   fc.assert(reminder, { seed })
   fc.assert(submultiplicative, { seed })
   fc.assert(inverse, { seed })
+}
+
+/**
+ * Tests the `Functor` laws
+ * @since 0.0.2
+ */
+export function functor<F extends URIS3>(
+  F: Functor3<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<F, any, any, A>>, Setoid<Type3<F, any, any, A>>]
+): void
+export function functor<F extends URIS3, U, L>(
+  F: Functor3C<F, U, L>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<F, any, any, A>>, Setoid<Type3<F, any, any, A>>]
+): void
+export function functor<F extends URIS2>(
+  F: Functor2<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<F, any, A>>, Setoid<Type2<F, any, A>>]
+): void
+export function functor<F extends URIS2, L>(
+  F: Functor2C<F, L>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<F, L, A>>, Setoid<Type2<F, L, A>>]
+): void
+export function functor<F extends URIS>(
+  F: Functor1<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type<F, A>>, Setoid<Type<F, A>>]
+): void
+export function functor<F>(
+  F: Functor<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<F, A>>, Setoid<HKT<F, A>>]
+): void {
+  const [arb1, S1] = lift(fc.string(), setoidString)
+  const [arb2, S2] = lift(fc.float(), setoidNumber)
+  const [, S3] = lift(fc.boolean(), setoidBoolean)
+  const identity1 = fc.property(arb1, fa => S1.equals(F.map(fa, a => a), fa))
+  const identity2 = fc.property(arb2, fa => S2.equals(F.map(fa, a => a), fa))
+
+  const len = (s: string): number => s.length
+  const gt2 = (n: number): boolean => n > 2
+
+  const composition = fc.property(arb1, fa => S3.equals(F.map(fa, a => gt2(len(a))), F.map(F.map(fa, len), gt2)))
+
+  fc.assert(identity1)
+  fc.assert(identity2)
+  fc.assert(composition)
 }
