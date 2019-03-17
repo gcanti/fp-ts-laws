@@ -1,3 +1,8 @@
+---
+title: Home
+nav_order: 1
+---
+
 [fp-ts](https://github.com/gcanti/fp-ts) type class laws for property based testing
 
 Usage of [fast-check](https://github.com/dubzzz/fast-check) is required.
