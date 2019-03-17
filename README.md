@@ -20,3 +20,5 @@ describe('my semigroup instance', () => {
   })
 })
 ```
+
+For other examples check out the [tests](test/index.ts)
