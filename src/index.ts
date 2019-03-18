@@ -7,7 +7,8 @@ import { Ord } from 'fp-ts/lib/Ord'
 import { Ring } from 'fp-ts/lib/Ring'
 import { Semigroup } from 'fp-ts/lib/Semigroup'
 import { Semiring } from 'fp-ts/lib/Semiring'
-import { Setoid, setoidBoolean, setoidNumber, setoidString } from 'fp-ts/lib/Setoid'
+import { Setoid, setoidBoolean, setoidNumber, setoidString, fromEquals } from 'fp-ts/lib/Setoid'
+import { Monad, Monad1, Monad2C, Monad2, Monad3, Monad3C } from 'fp-ts/lib/Monad'
 
 /**
  * Tests the `Setoid` laws
@@ -208,4 +209,49 @@ export function functor<F>(
   fc.assert(identity1)
   fc.assert(identity2)
   fc.assert(composition)
+}
+
+export function monad<M extends URIS3>(
+  M: Monad3<M>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<M, any, any, A>>, Setoid<Type3<M, any, any, A>>]
+): void
+export function monad<M extends URIS3, U, L>(
+  M: Monad3C<M, U, L>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<M, any, any, A>>, Setoid<Type3<M, any, any, A>>]
+): void
+export function monad<M extends URIS2>(
+  M: Monad2<M>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<M, any, A>>, Setoid<Type2<M, any, A>>]
+): void
+export function monad<M extends URIS2, L>(
+  M: Monad2C<M, L>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<M, any, A>>, Setoid<Type2<M, any, A>>]
+): void
+export function monad<M extends URIS>(
+  M: Monad1<M>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type<M, A>>, Setoid<Type<M, A>>]
+): void
+export function monad<M>(
+  M: Monad<M>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<M, A>>, Setoid<HKT<M, A>>]
+): void
+export function monad<M>(
+  M: Monad<M>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<M, A>>, Setoid<HKT<M, A>>]
+): void {
+  const [arb, S] = lift(fc.integer(), setoidNumber)
+  const len = (s: string): HKT<M, number> => M.of(s.length)
+  const double = (n: number): number => n * 2
+
+  const leftIdentity = fc.property(fc.string(), a => S.equals(M.chain(M.of(a), len), len(a)))
+  const rightIdentity = fc.property(arb, fa => S.equals(M.chain(fa, M.of), fa))
+  const derivedMap = fc.property(arb, fa => S.equals(M.map(fa, double), M.chain(fa, a => M.of(double(a)))))
+
+  const [arb2] = lift(fc.func(fc.integer()), fromEquals((a, b) => a() === b()))
+  const derivedAp = fc.property(arb, arb2, (fa, fab) => S.equals(M.ap(fab, fa), M.chain(fab, f => M.map(fa, f))))
+
+  fc.assert(leftIdentity)
+  fc.assert(rightIdentity)
+  fc.assert(derivedMap)
+  fc.assert(derivedAp)
 }

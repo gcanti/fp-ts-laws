@@ -10,6 +10,7 @@ parent: Modules
 
 - [field (function)](#field-function)
 - [functor (function)](#functor-function)
+- [monad (function)](#monad-function)
 - [monoid (function)](#monoid-function)
 - [ord (function)](#ord-function)
 - [ring (function)](#ring-function)
@@ -61,6 +62,37 @@ export function functor<F extends URIS>(
 ```
 
 Added in v0.0.2
+
+# monad (function)
+
+**Signature**
+
+```ts
+export function monad<M extends URIS3>(
+  M: Monad3<M>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<M, any, any, A>>, Setoid<Type3<M, any, any, A>>]
+): void
+export function monad<M extends URIS3, U, L>(
+  M: Monad3C<M, U, L>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<M, any, any, A>>, Setoid<Type3<M, any, any, A>>]
+): void
+export function monad<M extends URIS2>(
+  M: Monad2<M>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<M, any, A>>, Setoid<Type2<M, any, A>>]
+): void
+export function monad<M extends URIS2, L>(
+  M: Monad2C<M, L>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<M, any, A>>, Setoid<Type2<M, any, A>>]
+): void
+export function monad<M extends URIS>(
+  M: Monad1<M>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type<M, A>>, Setoid<Type<M, A>>]
+): void
+export function monad<M>(
+  M: Monad<M>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<M, A>>, Setoid<HKT<M, A>>]
+): void { ... }
+```
 
 # monoid (function)
 

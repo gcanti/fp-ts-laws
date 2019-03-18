@@ -1,7 +1,7 @@
 import * as fc from 'fast-check'
 import * as E from 'fp-ts/lib/Either'
 import { fieldNumber } from 'fp-ts/lib/Field'
-import { monoidSum } from 'fp-ts/lib/Monoid'
+import { monoidSum, getArrayMonoid } from 'fp-ts/lib/Monoid'
 import * as O from 'fp-ts/lib/Option'
 import { ordNumber } from 'fp-ts/lib/Ord'
 import { Semigroup } from 'fp-ts/lib/Semigroup'
@@ -67,5 +67,16 @@ describe('functor', () => {
     laws.functor(O.option, (arb, S) => [getOption(arb), O.getSetoid(S)])
     laws.functor(E.either, (arb, S) => [getEither(fc.string(), arb), E.getSetoid(setoidString, S)])
     laws.functor(V.validation, (arb, S) => [getValidation(fc.string(), arb), V.getSetoid(setoidString, S)])
+  })
+})
+
+describe('monad', () => {
+  it('should test Monad laws', () => {
+    laws.monad(O.option, (arb, S) => [getOptions(arb), O.getSetoid(S)])
+    laws.monad(E.either, (arb, S) => [getEithers(fc.string(), arb), E.getSetoid(setoidString, S)])
+    laws.monad(V.getMonad(getArrayMonoid<string>()), (arb, S) => [
+      getValidations(fc.string(), arb),
+      V.getSetoid(setoidString, S)
+    ])
   })
 })
