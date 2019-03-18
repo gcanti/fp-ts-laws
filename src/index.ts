@@ -7,7 +7,7 @@ import { Ord } from 'fp-ts/lib/Ord'
 import { Ring } from 'fp-ts/lib/Ring'
 import { Semigroup } from 'fp-ts/lib/Semigroup'
 import { Semiring } from 'fp-ts/lib/Semiring'
-import { Setoid, setoidBoolean, setoidNumber, setoidString, fromEquals } from 'fp-ts/lib/Setoid'
+import { Setoid, setoidBoolean, setoidNumber, setoidString } from 'fp-ts/lib/Setoid'
 import { Monad, Monad1, Monad2C, Monad2, Monad3, Monad3C } from 'fp-ts/lib/Monad'
 
 /**
@@ -247,11 +247,7 @@ export function monad<M>(
   const rightIdentity = fc.property(arb, fa => S.equals(M.chain(fa, M.of), fa))
   const derivedMap = fc.property(arb, fa => S.equals(M.map(fa, double), M.chain(fa, a => M.of(double(a)))))
 
-  const [arb2] = lift(fc.func(fc.integer()), fromEquals((a, b) => a() === b()))
-  const derivedAp = fc.property(arb, arb2, (fa, fab) => S.equals(M.ap(fab, fa), M.chain(fab, f => M.map(fa, f))))
-
   fc.assert(leftIdentity)
   fc.assert(rightIdentity)
   fc.assert(derivedMap)
-  fc.assert(derivedAp)
 }
