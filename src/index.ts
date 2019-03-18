@@ -239,15 +239,25 @@ export function monad<M>(
   M: Monad<M>,
   lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<M, A>>, Setoid<HKT<M, A>>]
 ): void {
-  const [arb, S] = lift(fc.integer(), setoidNumber)
+  const [arb1, S1] = lift(fc.integer(), setoidNumber)
+  const [arb2, S2] = lift(fc.string(), setoidString)
   const len = (s: string): HKT<M, number> => M.of(s.length)
+  const concat = (s: string): HKT<M, string> => M.of(s + s)
   const double = (n: number): number => n * 2
+  const removeA = (s: string): string => s.replace('A', '')
 
-  const leftIdentity = fc.property(fc.string(), a => S.equals(M.chain(M.of(a), len), len(a)))
-  const rightIdentity = fc.property(arb, fa => S.equals(M.chain(fa, M.of), fa))
-  const derivedMap = fc.property(arb, fa => S.equals(M.map(fa, double), M.chain(fa, a => M.of(double(a)))))
+  const leftIdentity1 = fc.property(fc.string(), a => S1.equals(M.chain(M.of(a), len), len(a)))
+  const rightIdentity1 = fc.property(arb1, fa => S1.equals(M.chain(fa, M.of), fa))
+  const derivedMap1 = fc.property(arb1, fa => S1.equals(M.map(fa, double), M.chain(fa, a => M.of(double(a)))))
 
-  fc.assert(leftIdentity)
-  fc.assert(rightIdentity)
-  fc.assert(derivedMap)
+  const leftIdentity2 = fc.property(fc.string(), a => S2.equals(M.chain(M.of(a), concat), concat(a)))
+  const rightIdentity2 = fc.property(arb2, fa => S2.equals(M.chain(fa, M.of), fa))
+  const derivedMap2 = fc.property(arb2, fa => S2.equals(M.map(fa, removeA), M.chain(fa, a => M.of(removeA(a)))))
+
+  fc.assert(leftIdentity1)
+  fc.assert(rightIdentity1)
+  fc.assert(derivedMap1)
+  fc.assert(leftIdentity2)
+  fc.assert(rightIdentity2)
+  fc.assert(derivedMap2)
 }
