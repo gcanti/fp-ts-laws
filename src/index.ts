@@ -231,7 +231,7 @@ export function functor<F>(
 
 /**
  * Tests the `Apply` laws
- * @since 0.0.3
+ * @since 0.0.2
  */
 export function apply<F extends URIS3>(
   F: Apply3<F>,
@@ -281,7 +281,7 @@ export function apply<F>(
 
 /**
  * Tests the `Applicative` laws
- * @since 0.0.3
+ * @since 0.0.2
  */
 export function applicative<F extends URIS3>(
   F: Applicative3<F>,
@@ -338,7 +338,7 @@ export function applicative<F>(
 
 /**
  * Tests the `Monad` laws
- * @since 0.0.3
+ * @since 0.0.2
  */
 export function monad<M extends URIS3>(
   M: Monad3<M>,

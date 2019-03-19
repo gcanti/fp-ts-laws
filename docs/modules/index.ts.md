@@ -61,7 +61,7 @@ export function applicative<F>(
 ): void { ... }
 ```
 
-Added in v0.0.3
+Added in v0.0.2
 
 # apply (function)
 
@@ -102,7 +102,7 @@ export function apply<F>(
 ): void { ... }
 ```
 
-Added in v0.0.3
+Added in v0.0.2
 
 # field (function)
 
@@ -181,7 +181,7 @@ export function monad<M extends URIS>(M: Monad1<M>, liftSetoid: <A>(Sa: Setoid<A
 export function monad<M>(M: Monad<M>, liftSetoid: <A>(Sa: Setoid<A>) => Setoid<HKT<M, A>>): void { ... }
 ```
 
-Added in v0.0.3
+Added in v0.0.2
 
 # monoid (function)
 
