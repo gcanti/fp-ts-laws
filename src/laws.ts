@@ -49,9 +49,9 @@ export const chain = {
 }
 
 export const monad = {
-  leftIdentity: <F, A, B>(F: Monad<F>, S: Setoid<HKT<F, B>>, afb: Function1<A, HKT<F, B>>) => (a: A) =>
-    S.equals(F.chain(F.of(a), afb), afb(a)),
-  rightIdentity: <F, A>(F: Monad<F>, S: Setoid<HKT<F, A>>) => (fa: HKT<F, A>) => S.equals(F.chain(fa, F.of), fa),
-  derivedMap: <F, A, B>(F: Monad<F>, S: Setoid<HKT<F, B>>, ab: Function1<A, B>) => (fa: HKT<F, A>) =>
-    S.equals(F.map(fa, ab), F.chain(fa, a => F.of(ab(a))))
+  leftIdentity: <M, A, B>(M: Monad<M>, S: Setoid<HKT<M, B>>, afb: Function1<A, HKT<M, B>>) => (a: A) =>
+    S.equals(M.chain(M.of(a), afb), afb(a)),
+  rightIdentity: <M, A>(M: Monad<M>, S: Setoid<HKT<M, A>>) => (fa: HKT<M, A>) => S.equals(M.chain(fa, M.of), fa),
+  derivedMap: <M, A, B>(M: Monad<M>, S: Setoid<HKT<M, B>>, ab: Function1<A, B>) => (fa: HKT<M, A>) =>
+    S.equals(M.map(fa, ab), M.chain(fa, a => M.of(ab(a))))
 }
