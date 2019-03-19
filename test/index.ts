@@ -64,47 +64,40 @@ describe('ring', () => {
 
 describe('functor', () => {
   it('should test Functor laws', () => {
-    laws.functor(O.option, (arb, S) => [getOption(arb), O.getSetoid(S)])
-    laws.functor(E.either, (arb, S) => [getEither(fc.string(), arb), E.getSetoid(setoidString, S)])
-    laws.functor(V.validation, (arb, S) => [getValidation(fc.string(), arb), V.getSetoid(setoidString, S)])
+    laws.functor(O.option, getOption, O.getSetoid)
+    laws.functor(E.either, arb => getEither(fc.string(), arb), S => E.getSetoid(setoidString, S))
+    laws.functor(V.validation, arb => getValidation(fc.string(), arb), S => V.getSetoid(setoidString, S))
   })
 })
 
 describe('apply', () => {
   it('should test Apply laws', () => {
-    laws.apply(O.option, (arb, S) => [getOptions(arb), O.getSetoid(S)])
-    laws.apply(E.either, (arb, S) => [getEithers(fc.string(), arb), E.getSetoid(setoidString, S)])
-    laws.apply(V.getApplicative(monoidString), (arb, S) => [
-      getValidations(fc.string(), arb),
-      V.getSetoid(setoidString, S)
-    ])
+    laws.apply(O.option, getOption, O.getSetoid)
+    laws.apply(E.either, arb => getEither(fc.string(), arb), S => E.getSetoid(setoidString, S))
+    laws.apply(
+      V.getApplicative(monoidString),
+      arb => getValidation(fc.string(), arb),
+      S => V.getSetoid(setoidString, S)
+    )
   })
 })
 
 describe('applicative', () => {
   it('should test Applicative laws', () => {
-    laws.applicative(O.option, (arb, S) => [getOptions(arb), O.getSetoid(S)])
-    laws.applicative(E.either, (arb, S) => [getEithers(fc.string(), arb), E.getSetoid(setoidString, S)])
-    laws.applicative(V.getApplicative(monoidString), (arb, S) => [
-      getValidations(fc.string(), arb),
-      V.getSetoid(setoidString, S)
-    ])
-  })
-})
-
-describe('chain', () => {
-  it('should test Chain laws', () => {
-    laws.chain(O.option, (arb, S) => [getOptions(arb), O.getSetoid(S)], O.option.of)
-    laws.chain(E.either, (arb, S) => [getEithers(fc.string(), arb), E.getSetoid(setoidString, S)], E.either.of)
-    const MV = V.getMonad(monoidString)
-    laws.chain(MV, (arb, S) => [getValidations(fc.string(), arb), V.getSetoid(setoidString, S)], MV.of)
+    laws.applicative(O.option, getOption, O.getSetoid)
+    laws.applicative(E.either, arb => getEither(fc.string(), arb), S => E.getSetoid(setoidString, S))
+    laws.applicative(
+      V.getApplicative(monoidString),
+      arb => getValidation(fc.string(), arb),
+      S => V.getSetoid(setoidString, S)
+    )
   })
 })
 
 describe('monad', () => {
   it('should test Monad laws', () => {
-    laws.monad(O.option, (arb, S) => [getOptions(arb), O.getSetoid(S)])
-    laws.monad(E.either, (arb, S) => [getEithers(fc.string(), arb), E.getSetoid(setoidString, S)])
-    laws.monad(V.getMonad(monoidString), (arb, S) => [getValidations(fc.string(), arb), V.getSetoid(setoidString, S)])
+    laws.monad(O.option, O.getSetoid)
+    laws.monad(E.either, S => E.getSetoid(setoidString, S))
+    laws.monad(V.getMonad(monoidString), S => V.getSetoid(setoidString, S))
   })
 })

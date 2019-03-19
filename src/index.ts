@@ -8,10 +8,9 @@ import { Ord } from 'fp-ts/lib/Ord'
 import { Ring } from 'fp-ts/lib/Ring'
 import { Semigroup } from 'fp-ts/lib/Semigroup'
 import { Semiring } from 'fp-ts/lib/Semiring'
-import { Setoid, setoidBoolean, setoidNumber, setoidString, fromEquals, strictEqual } from 'fp-ts/lib/Setoid'
+import { Setoid, setoidBoolean, setoidNumber, setoidString } from 'fp-ts/lib/Setoid'
 import { Monad, Monad1, Monad2C, Monad2, Monad3, Monad3C } from 'fp-ts/lib/Monad'
 import { Apply3, Apply3C, Apply2, Apply2C, Apply1, Apply } from 'fp-ts/lib/Apply'
-import { Chain3, Chain3C, Chain2, Chain2C, Chain1, Chain } from 'fp-ts/lib/Chain'
 import {
   Applicative3,
   Applicative3C,
@@ -20,6 +19,7 @@ import {
   Applicative1,
   Applicative
 } from 'fp-ts/lib/Applicative'
+import { Function1 } from 'fp-ts/lib/function'
 
 /**
  * Tests the `Setoid` laws
@@ -184,44 +184,48 @@ export const field = <A>(F: Field<A>, S: Setoid<A>, arb: fc.Arbitrary<A>, seed?:
  */
 export function functor<F extends URIS3>(
   F: Functor3<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<F, any, any, A>>, Setoid<Type3<F, any, any, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, any, any, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, any, any, A>>
 ): void
 export function functor<F extends URIS3, U, L>(
   F: Functor3C<F, U, L>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<F, any, any, A>>, Setoid<Type3<F, any, any, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, any, any, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, any, any, A>>
 ): void
 export function functor<F extends URIS2>(
   F: Functor2<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<F, any, A>>, Setoid<Type2<F, any, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, any, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, any, A>>
 ): void
 export function functor<F extends URIS2, L>(
   F: Functor2C<F, L>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<F, L, A>>, Setoid<Type2<F, L, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, any, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, any, A>>
 ): void
 export function functor<F extends URIS>(
   F: Functor1<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type<F, A>>, Setoid<Type<F, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type<F, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type<F, A>>
 ): void
 export function functor<F>(
   F: Functor<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<F, A>>, Setoid<HKT<F, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<HKT<F, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<HKT<F, A>>
 ): void
 export function functor<F>(
   F: Functor<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<F, A>>, Setoid<HKT<F, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<HKT<F, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<HKT<F, A>>
 ): void {
-  const [arb1, S1] = lift(fc.string(), setoidString)
-  const [arb2, S2] = lift(fc.float(), setoidNumber)
-  const [, S3] = lift(fc.boolean(), setoidBoolean)
-  const identity1 = fc.property(arb1, laws.functor.identity(F, S1))
-  const identity2 = fc.property(arb2, laws.functor.identity(F, S2))
+  const arb = lift(fc.string())
+  const Sa = liftSetoid(setoidString)
+  const Sc = liftSetoid(setoidBoolean)
+  const identity = fc.property(arb, laws.functor.identity(F, Sa))
+  const ab: Function1<string, number> = s => s.length
+  const bc: Function1<number, boolean> = n => n > 2
+  const composition = fc.property(arb, laws.functor.composition(F, Sc, ab, bc))
 
-  const arbAb = fc.func<[string], number>(fc.integer())
-  const arbBc = fc.func<[number], boolean>(fc.boolean())
-  const composition = fc.property(arb1, arbAb, arbBc, laws.functor.composition(F, S3))
-
-  fc.assert(identity1)
-  fc.assert(identity2)
+  fc.assert(identity)
   fc.assert(composition)
 }
 
@@ -231,39 +235,45 @@ export function functor<F>(
  */
 export function apply<F extends URIS3>(
   F: Apply3<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<F, any, any, A>>, Setoid<Type3<F, any, any, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, any, any, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, any, any, A>>
 ): void
 export function apply<F extends URIS3, U, L>(
   F: Apply3C<F, U, L>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<F, any, any, A>>, Setoid<Type3<F, any, any, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, any, any, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, any, any, A>>
 ): void
 export function apply<F extends URIS2>(
   F: Apply2<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<F, any, A>>, Setoid<Type2<F, any, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, any, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, any, A>>
 ): void
 export function apply<F extends URIS2, L>(
   F: Apply2C<F, L>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<F, L, A>>, Setoid<Type2<F, L, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, any, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, any, A>>
 ): void
 export function apply<F extends URIS>(
   F: Apply1<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type<F, A>>, Setoid<Type<F, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type<F, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type<F, A>>
 ): void
 export function apply<F>(
   F: Apply<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<F, A>>, Setoid<HKT<F, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<HKT<F, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<HKT<F, A>>
 ): void
 export function apply<F>(
   F: Apply<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<F, A>>, Setoid<HKT<F, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<HKT<F, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<HKT<F, A>>
 ): void {
-  functor(F, lift)
+  functor(F, lift, liftSetoid)
 
-  const [, Sc] = lift(fc.boolean(), setoidBoolean)
-  const [arbFa] = lift(fc.string(), setoidString)
-  const [arbFbc] = lift(fc.func<[number], boolean>(fc.boolean()), fromEquals(strictEqual))
-  const [arbFab] = lift(fc.func<[string], number>(fc.integer()), fromEquals(strictEqual))
-
+  const Sc = liftSetoid(setoidBoolean)
+  const arbFa = lift(fc.string())
+  const arbFab = lift(fc.constant((a: string) => a.length))
+  const arbFbc = lift(fc.constant((b: number) => b > 2))
   const associativeComposition = fc.property(arbFa, arbFab, arbFbc, laws.apply.associativeComposition(F, Sc))
 
   fc.assert(associativeComposition)
@@ -275,41 +285,50 @@ export function apply<F>(
  */
 export function applicative<F extends URIS3>(
   F: Applicative3<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<F, any, any, A>>, Setoid<Type3<F, any, any, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, any, any, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, any, any, A>>
 ): void
 export function applicative<F extends URIS3, U, L>(
   F: Applicative3C<F, U, L>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<F, any, any, A>>, Setoid<Type3<F, any, any, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, any, any, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, any, any, A>>
 ): void
 export function applicative<F extends URIS2>(
   F: Applicative2<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<F, any, A>>, Setoid<Type2<F, any, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, any, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, any, A>>
 ): void
 export function applicative<F extends URIS2, L>(
   F: Applicative2C<F, L>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<F, L, A>>, Setoid<Type2<F, L, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, any, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, any, A>>
 ): void
 export function applicative<F extends URIS>(
   F: Applicative1<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type<F, A>>, Setoid<Type<F, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type<F, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type<F, A>>
 ): void
 export function applicative<F>(
   F: Applicative<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<F, A>>, Setoid<HKT<F, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<HKT<F, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<HKT<F, A>>
 ): void
 export function applicative<F>(
   F: Applicative<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<F, A>>, Setoid<HKT<F, A>>]
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<HKT<F, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<HKT<F, A>>
 ): void {
-  apply(F, lift)
+  apply(F, lift, liftSetoid)
 
-  const [arbFa, Sa] = lift(fc.string(), setoidString)
+  const arbFa = lift(fc.string())
+  const Sa = liftSetoid(setoidString)
+  const Sb = liftSetoid(setoidNumber)
   const identity = fc.property(arbFa, laws.applicative.identity(F, Sa))
-  const arbAb = fc.func<[string], string>(fc.string())
-  const homomorphism = fc.property(fc.string(), arbAb, laws.applicative.homomorphism(F, Sa))
-  const [arbFab] = lift(arbAb, null as any)
-  const interchange = fc.property(arbFab, fc.string(), laws.applicative.interchange(F, Sa))
-  const derivedMap = fc.property(arbFa, arbAb, laws.applicative.derivedMap(F, Sa))
+  const ab: Function1<string, number> = a => a.length
+  const homomorphism = fc.property(fc.string(), laws.applicative.homomorphism(F, Sb, ab))
+  const arbFab = lift(fc.constant(ab))
+  const interchange = fc.property(fc.string(), arbFab, laws.applicative.interchange(F, Sb))
+  const derivedMap = fc.property(arbFa, laws.applicative.derivedMap(F, Sb, ab))
 
   fc.assert(identity)
   fc.assert(homomorphism)
@@ -318,98 +337,42 @@ export function applicative<F>(
 }
 
 /**
- * Tests the `Chain` laws
- * @since 0.0.3
- */
-export function chain<F extends URIS3>(
-  F: Chain3<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<F, any, any, A>>, Setoid<Type3<F, any, any, A>>],
-  of: <A>(a: A) => Type3<F, any, any, A>
-): void
-export function chain<F extends URIS3, U, L>(
-  F: Chain3C<F, U, L>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<F, any, any, A>>, Setoid<Type3<F, any, any, A>>],
-  of: <A>(a: A) => Type3<F, any, any, A>
-): void
-export function chain<F extends URIS2>(
-  F: Chain2<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<F, any, A>>, Setoid<Type2<F, any, A>>],
-  of: <A>(a: A) => Type2<F, any, A>
-): void
-export function chain<F extends URIS2, L>(
-  F: Chain2C<F, L>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<F, L, A>>, Setoid<Type2<F, L, A>>],
-  of: <A>(a: A) => Type2<F, any, A>
-): void
-export function chain<F extends URIS>(
-  F: Chain1<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type<F, A>>, Setoid<Type<F, A>>],
-  of: <A>(a: A) => Type<F, A>
-): void
-export function chain<F>(
-  F: Chain<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<F, A>>, Setoid<HKT<F, A>>],
-  of: <A>(a: A) => HKT<F, A>
-): void
-export function chain<F>(
-  F: Chain<F>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<F, A>>, Setoid<HKT<F, A>>],
-  of: <A>(a: A) => HKT<F, A>
-): void {
-  apply(F, lift)
-
-  const [, Sc] = lift(fc.boolean(), setoidBoolean)
-  const [arbFa] = lift(fc.string(), setoidString)
-  const arbAfb = fc.func<[string], number>(fc.integer()).map(ab => (a: string) => of(ab(a)))
-  const arbBfc = fc.func<[number], boolean>(fc.boolean()).map(bc => (b: number) => of(bc(b)))
-
-  const associativity = fc.property(arbFa, arbAfb, arbBfc, laws.chain.associativity(F, Sc))
-
-  fc.assert(associativity)
-}
-
-/**
  * Tests the `Monad` laws
  * @since 0.0.3
  */
 export function monad<M extends URIS3>(
   M: Monad3<M>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<M, any, any, A>>, Setoid<Type3<M, any, any, A>>]
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<M, any, any, A>>
 ): void
 export function monad<M extends URIS3, U, L>(
   M: Monad3C<M, U, L>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<M, any, any, A>>, Setoid<Type3<M, any, any, A>>]
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<M, any, any, A>>
 ): void
-export function monad<M extends URIS2>(
-  M: Monad2<M>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<M, any, A>>, Setoid<Type2<M, any, A>>]
-): void
+export function monad<M extends URIS2>(M: Monad2<M>, liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<M, any, A>>): void
 export function monad<M extends URIS2, L>(
   M: Monad2C<M, L>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<M, any, A>>, Setoid<Type2<M, any, A>>]
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<M, L, A>>
 ): void
-export function monad<M extends URIS>(
-  M: Monad1<M>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type<M, A>>, Setoid<Type<M, A>>]
-): void
-export function monad<M>(
-  M: Monad<M>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<M, A>>, Setoid<HKT<M, A>>]
-): void
-export function monad<M>(
-  M: Monad<M>,
-  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<M, A>>, Setoid<HKT<M, A>>]
-): void {
-  applicative(M, lift)
-  chain(M, lift, M.of)
+export function monad<M extends URIS>(M: Monad1<M>, liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type<M, A>>): void
+export function monad<M>(M: Monad<M>, liftSetoid: <A>(Sa: Setoid<A>) => Setoid<HKT<M, A>>): void
+export function monad<M>(M: Monad<M>, liftSetoid: <A>(Sa: Setoid<A>) => Setoid<HKT<M, A>>): void {
+  applicative(M, arb => arb.map(M.of), liftSetoid)
 
-  const [arb1, S1] = lift(fc.integer(), setoidNumber)
-  const arbAa = fc.func<[number], number>(fc.integer())
-  const arbAfb = fc.func<[string], number>(fc.integer()).map(ab => (a: string) => M.of(ab(a)))
+  const Sc = liftSetoid(setoidBoolean)
+  const arbFa = fc.string().map(M.of)
+  const afb: Function1<string, HKT<M, number>> = a => M.of(a.length)
+  const bfc: Function1<number, HKT<M, boolean>> = b => M.of(b > 2)
+  const associativity = fc.property(arbFa, laws.chain.associativity(M, Sc, afb, bfc))
 
-  const leftIdentity = fc.property(fc.string(), arbAfb, laws.monad.leftIdentity(M, S1))
-  const rightIdentity = fc.property(arb1, laws.monad.rightIdentity(M, S1))
-  const derivedMap = fc.property(arb1, arbAa, laws.monad.derivedMap(M, S1))
+  fc.assert(associativity)
+
+  const arb = fc.string().map(M.of)
+  const Sa = liftSetoid(setoidString)
+  const Sb = liftSetoid(setoidNumber)
+  const leftIdentity = fc.property(fc.string(), laws.monad.leftIdentity(M, Sb, afb))
+  const rightIdentity = fc.property(arb, laws.monad.rightIdentity(M, Sa))
+  const ab: Function1<string, number> = a => a.length
+  const derivedMap = fc.property(arb, laws.monad.derivedMap(M, Sb, ab))
 
   fc.assert(leftIdentity)
   fc.assert(rightIdentity)
