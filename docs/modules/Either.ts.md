@@ -8,44 +8,44 @@ parent: Modules
 
 <h2 class="text-delta">Table of contents</h2>
 
-- [getEithers (function)](#geteithers-function)
-- [getLefts (function)](#getlefts-function)
-- [getRights (function)](#getrights-function)
+- [getEither (function)](#geteither-function)
+- [getLeft (function)](#getleft-function)
+- [getRight (function)](#getright-function)
 
 ---
 
-# getEithers (function)
+# getEither (function)
 
-Returns an `Arbitrary` that yelds both `right`s and `left`s
+Returns an `Arbitrary` that yelds both `left`s and `right`s
 
 **Signature**
 
 ```ts
-export function getEithers<L, A>(leftArb: fc.Arbitrary<L>, rightArb: fc.Arbitrary<A>): fc.Arbitrary<Either<L, A>> { ... }
+export function getEither<L, A>(leftArb: fc.Arbitrary<L>, rightArb: fc.Arbitrary<A>): fc.Arbitrary<Either<L, A>> { ... }
 ```
 
 Added in v0.0.2
 
-# getLefts (function)
+# getLeft (function)
 
 Returns an `Arbitrary` that yelds only `left`s
 
 **Signature**
 
 ```ts
-export function getLefts<L, A>(arb: fc.Arbitrary<L>): fc.Arbitrary<Either<L, A>> { ... }
+export function getLeft<L, A>(arb: fc.Arbitrary<L>): fc.Arbitrary<Either<L, A>> { ... }
 ```
 
 Added in v0.0.2
 
-# getRights (function)
+# getRight (function)
 
 Returns an `Arbitrary` that yelds only `right`s
 
 **Signature**
 
 ```ts
-export function getRights<L, A>(arb: fc.Arbitrary<A>): fc.Arbitrary<Either<L, A>> { ... }
+export function getRight<L, A>(arb: fc.Arbitrary<A>): fc.Arbitrary<Either<L, A>> { ... }
 ```
 
 Added in v0.0.2

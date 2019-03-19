@@ -8,31 +8,44 @@ parent: Modules
 
 <h2 class="text-delta">Table of contents</h2>
 
-- [getOptions (function)](#getoptions-function)
-- [getSomes (function)](#getsomes-function)
+- [getNone (function)](#getnone-function)
+- [getOption (function)](#getoption-function)
+- [getSome (function)](#getsome-function)
 
 ---
 
-# getOptions (function)
+# getNone (function)
 
-Returns an `Arbitrary` that yelds both `some`s and `none`s
+Returns an `Arbitrary` that yelds only `none`s
 
 **Signature**
 
 ```ts
-export function getOptions<A>(arb: fc.Arbitrary<A>): fc.Arbitrary<Option<A>> { ... }
+export function getNone<A>(): fc.Arbitrary<Option<A>> { ... }
 ```
 
 Added in v0.0.2
 
-# getSomes (function)
+# getOption (function)
+
+Returns an `Arbitrary` that yelds both `none`s and `some`s
+
+**Signature**
+
+```ts
+export function getOption<A>(arb: fc.Arbitrary<A>): fc.Arbitrary<Option<A>> { ... }
+```
+
+Added in v0.0.2
+
+# getSome (function)
 
 Returns an `Arbitrary` that yelds only `some`s
 
 **Signature**
 
 ```ts
-export function getSomes<A>(arb: fc.Arbitrary<A>): fc.Arbitrary<Option<A>> { ... }
+export function getSome<A>(arb: fc.Arbitrary<A>): fc.Arbitrary<Option<A>> { ... }
 ```
 
 Added in v0.0.2

@@ -8,9 +8,9 @@ import { Semigroup } from 'fp-ts/lib/Semigroup'
 import { setoidNumber, setoidString } from 'fp-ts/lib/Setoid'
 import * as V from 'fp-ts/lib/Validation'
 import * as laws from '../src'
-import { getEithers } from '../src/Either'
-import { getOptions } from '../src/Option'
-import { getValidations } from '../src/Validation'
+import { getEither } from '../src/Either'
+import { getOption } from '../src/Option'
+import { getValidation } from '../src/Validation'
 
 describe('setoid', () => {
   it('should test Setoid laws', () => {
@@ -64,8 +64,8 @@ describe('ring', () => {
 
 describe('functor', () => {
   it('should test Functor laws', () => {
-    laws.functor(O.option, (arb, S) => [getOptions(arb), O.getSetoid(S)])
-    laws.functor(E.either, (arb, S) => [getEithers(fc.string(), arb), E.getSetoid(setoidString, S)])
-    laws.functor(V.validation, (arb, S) => [getValidations(fc.string(), arb), V.getSetoid(setoidString, S)])
+    laws.functor(O.option, (arb, S) => [getOption(arb), O.getSetoid(S)])
+    laws.functor(E.either, (arb, S) => [getEither(fc.string(), arb), E.getSetoid(setoidString, S)])
+    laws.functor(V.validation, (arb, S) => [getValidation(fc.string(), arb), V.getSetoid(setoidString, S)])
   })
 })
