@@ -1,7 +1,7 @@
 import * as fc from 'fast-check'
 import * as E from 'fp-ts/lib/Either'
 import { fieldNumber } from 'fp-ts/lib/Field'
-import { monoidSum, getArrayMonoid } from 'fp-ts/lib/Monoid'
+import { monoidSum, monoidString } from 'fp-ts/lib/Monoid'
 import * as O from 'fp-ts/lib/Option'
 import { ordNumber } from 'fp-ts/lib/Ord'
 import { Semigroup } from 'fp-ts/lib/Semigroup'
@@ -70,13 +70,30 @@ describe('functor', () => {
   })
 })
 
+describe('apply', () => {
+  it('should test Apply laws', () => {
+    laws.apply(O.option, (arb, S) => [getOptions(arb), O.getSetoid(S)])
+    laws.apply(E.either, (arb, S) => [getEithers(fc.string(), arb), E.getSetoid(setoidString, S)])
+    laws.apply(V.getApplicative(monoidString), (arb, S) => [
+      getValidations(fc.string(), arb),
+      V.getSetoid(setoidString, S)
+    ])
+  })
+})
+
+describe('chain', () => {
+  it('should test Chain laws', () => {
+    laws.chain(O.option, (arb, S) => [getOptions(arb), O.getSetoid(S)], O.option.of)
+    laws.chain(E.either, (arb, S) => [getEithers(fc.string(), arb), E.getSetoid(setoidString, S)], E.either.of)
+    const MV = V.getMonad(monoidString)
+    laws.chain(MV, (arb, S) => [getValidations(fc.string(), arb), V.getSetoid(setoidString, S)], MV.of)
+  })
+})
+
 describe('monad', () => {
   it('should test Monad laws', () => {
     laws.monad(O.option, (arb, S) => [getOptions(arb), O.getSetoid(S)])
     laws.monad(E.either, (arb, S) => [getEithers(fc.string(), arb), E.getSetoid(setoidString, S)])
-    laws.monad(V.getMonad(getArrayMonoid<string>()), (arb, S) => [
-      getValidations(fc.string(), arb),
-      V.getSetoid(setoidString, S)
-    ])
+    laws.monad(V.getMonad(monoidString), (arb, S) => [getValidations(fc.string(), arb), V.getSetoid(setoidString, S)])
   })
 })

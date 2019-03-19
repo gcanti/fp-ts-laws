@@ -8,6 +8,8 @@ parent: Modules
 
 <h2 class="text-delta">Table of contents</h2>
 
+- [apply (function)](#apply-function)
+- [chain (function)](#chain-function)
 - [field (function)](#field-function)
 - [functor (function)](#functor-function)
 - [monad (function)](#monad-function)
@@ -19,6 +21,82 @@ parent: Modules
 - [setoid (function)](#setoid-function)
 
 ---
+
+# apply (function)
+
+Tests the `Apply` laws
+
+**Signature**
+
+```ts
+export function apply<F extends URIS3>(
+  F: Apply3<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<F, any, any, A>>, Setoid<Type3<F, any, any, A>>]
+): void
+export function apply<F extends URIS3, U, L>(
+  F: Apply3C<F, U, L>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<F, any, any, A>>, Setoid<Type3<F, any, any, A>>]
+): void
+export function apply<F extends URIS2>(
+  F: Apply2<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<F, any, A>>, Setoid<Type2<F, any, A>>]
+): void
+export function apply<F extends URIS2, L>(
+  F: Apply2C<F, L>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<F, L, A>>, Setoid<Type2<F, L, A>>]
+): void
+export function apply<F extends URIS>(
+  F: Apply1<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type<F, A>>, Setoid<Type<F, A>>]
+): void
+export function apply<F>(
+  F: Apply<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<F, A>>, Setoid<HKT<F, A>>]
+): void { ... }
+```
+
+Added in v0.0.3
+
+# chain (function)
+
+Tests the `Chain` laws
+
+**Signature**
+
+```ts
+export function chain<F extends URIS3>(
+  F: Chain3<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<F, any, any, A>>, Setoid<Type3<F, any, any, A>>],
+  of: <A>(a: A) => Type3<F, any, any, A>
+): void
+export function chain<F extends URIS3, U, L>(
+  F: Chain3C<F, U, L>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<F, any, any, A>>, Setoid<Type3<F, any, any, A>>],
+  of: <A>(a: A) => Type3<F, any, any, A>
+): void
+export function chain<F extends URIS2>(
+  F: Chain2<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<F, any, A>>, Setoid<Type2<F, any, A>>],
+  of: <A>(a: A) => Type2<F, any, A>
+): void
+export function chain<F extends URIS2, L>(
+  F: Chain2C<F, L>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<F, L, A>>, Setoid<Type2<F, L, A>>],
+  of: <A>(a: A) => Type2<F, any, A>
+): void
+export function chain<F extends URIS>(
+  F: Chain1<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type<F, A>>, Setoid<Type<F, A>>],
+  of: <A>(a: A) => Type<F, A>
+): void
+export function chain<F>(
+  F: Chain<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<F, A>>, Setoid<HKT<F, A>>],
+  of: <A>(a: A) => HKT<F, A>
+): void { ... }
+```
+
+Added in v0.0.3
 
 # field (function)
 
@@ -58,12 +136,18 @@ export function functor<F extends URIS2, L>(
 export function functor<F extends URIS>(
   F: Functor1<F>,
   lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type<F, A>>, Setoid<Type<F, A>>]
+): void
+export function functor<F>(
+  F: Functor<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<F, A>>, Setoid<HKT<F, A>>]
 ): void { ... }
 ```
 
 Added in v0.0.2
 
 # monad (function)
+
+Tests the `Monad` laws
 
 **Signature**
 
@@ -93,6 +177,8 @@ export function monad<M>(
   lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<M, A>>, Setoid<HKT<M, A>>]
 ): void { ... }
 ```
+
+Added in v0.0.3
 
 # monoid (function)
 
