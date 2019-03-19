@@ -81,6 +81,17 @@ describe('apply', () => {
   })
 })
 
+describe('applicative', () => {
+  it('should test Applicative laws', () => {
+    laws.applicative(O.option, (arb, S) => [getOptions(arb), O.getSetoid(S)])
+    laws.applicative(E.either, (arb, S) => [getEithers(fc.string(), arb), E.getSetoid(setoidString, S)])
+    laws.applicative(V.getApplicative(monoidString), (arb, S) => [
+      getValidations(fc.string(), arb),
+      V.getSetoid(setoidString, S)
+    ])
+  })
+})
+
 describe('chain', () => {
   it('should test Chain laws', () => {
     laws.chain(O.option, (arb, S) => [getOptions(arb), O.getSetoid(S)], O.option.of)

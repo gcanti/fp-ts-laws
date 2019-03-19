@@ -12,6 +12,14 @@ import { Setoid, setoidBoolean, setoidNumber, setoidString, fromEquals, strictEq
 import { Monad, Monad1, Monad2C, Monad2, Monad3, Monad3C } from 'fp-ts/lib/Monad'
 import { Apply3, Apply3C, Apply2, Apply2C, Apply1, Apply } from 'fp-ts/lib/Apply'
 import { Chain3, Chain3C, Chain2, Chain2C, Chain1, Chain } from 'fp-ts/lib/Chain'
+import {
+  Applicative3,
+  Applicative3C,
+  Applicative2,
+  Applicative2C,
+  Applicative1,
+  Applicative
+} from 'fp-ts/lib/Applicative'
 
 /**
  * Tests the `Setoid` laws
@@ -262,6 +270,54 @@ export function apply<F>(
 }
 
 /**
+ * Tests the `Applicative` laws
+ * @since 0.0.3
+ */
+export function applicative<F extends URIS3>(
+  F: Applicative3<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<F, any, any, A>>, Setoid<Type3<F, any, any, A>>]
+): void
+export function applicative<F extends URIS3, U, L>(
+  F: Applicative3C<F, U, L>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type3<F, any, any, A>>, Setoid<Type3<F, any, any, A>>]
+): void
+export function applicative<F extends URIS2>(
+  F: Applicative2<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<F, any, A>>, Setoid<Type2<F, any, A>>]
+): void
+export function applicative<F extends URIS2, L>(
+  F: Applicative2C<F, L>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type2<F, L, A>>, Setoid<Type2<F, L, A>>]
+): void
+export function applicative<F extends URIS>(
+  F: Applicative1<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<Type<F, A>>, Setoid<Type<F, A>>]
+): void
+export function applicative<F>(
+  F: Applicative<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<F, A>>, Setoid<HKT<F, A>>]
+): void
+export function applicative<F>(
+  F: Applicative<F>,
+  lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<F, A>>, Setoid<HKT<F, A>>]
+): void {
+  apply(F, lift)
+
+  const [arbFa, Sa] = lift(fc.string(), setoidString)
+  const identity = fc.property(arbFa, laws.applicative.identity(F, Sa))
+  const arbAb = fc.func<[string], string>(fc.string())
+  const homomorphism = fc.property(fc.string(), arbAb, laws.applicative.homomorphism(F, Sa))
+  const [arbFab] = lift(arbAb, null as any)
+  const interchange = fc.property(arbFab, fc.string(), laws.applicative.interchange(F, Sa))
+  const derivedMap = fc.property(arbFa, arbAb, laws.applicative.derivedMap(F, Sa))
+
+  fc.assert(identity)
+  fc.assert(homomorphism)
+  fc.assert(interchange)
+  fc.assert(derivedMap)
+}
+
+/**
  * Tests the `Chain` laws
  * @since 0.0.3
  */
@@ -344,6 +400,7 @@ export function monad<M>(
   M: Monad<M>,
   lift: <A>(arb: fc.Arbitrary<A>, S: Setoid<A>) => [fc.Arbitrary<HKT<M, A>>, Setoid<HKT<M, A>>]
 ): void {
+  applicative(M, lift)
   chain(M, lift, M.of)
 
   const [arb1, S1] = lift(fc.integer(), setoidNumber)
