@@ -6,6 +6,84 @@ import { Apply } from 'fp-ts/lib/Apply'
 import { Chain } from 'fp-ts/lib/Chain'
 import { Applicative } from 'fp-ts/lib/Applicative'
 import { Monad } from 'fp-ts/lib/Monad'
+import { Ord } from 'fp-ts/lib/Ord'
+import { Semigroup } from 'fp-ts/lib/Semigroup'
+import { Monoid } from 'fp-ts/lib/Monoid'
+import { Semiring } from 'fp-ts/lib/Semiring'
+import { Ring } from 'fp-ts/lib/Ring'
+import { Field } from 'fp-ts/lib/Field'
+
+export const setoid = {
+  reflexivity: <A>(S: Setoid<A>) => (a: A) => S.equals(a, a),
+  simmetry: <A>(S: Setoid<A>) => (a: A, b: A) => S.equals(a, b) === S.equals(b, a),
+  transitivity: <A>(S: Setoid<A>) => (a: A, b: A, c: A) =>
+    (S.equals(a, b) && S.equals(b, c)) === (S.equals(a, b) && S.equals(a, c))
+}
+
+export const ord = {
+  totality: <A>(O: Ord<A>) => (a: A, b: A) => O.compare(a, b) <= 0 || O.compare(b, a) <= 0,
+  reflexivity: <A>(O: Ord<A>) => (a: A) => O.compare(a, a) <= 0,
+  antisimmetry: <A>(O: Ord<A>) => (a: A, b: A) => (O.compare(a, b) <= 0 && O.compare(b, a) <= 0) === O.equals(a, b),
+  transitivity: <A>(O: Ord<A>) => (a: A, b: A, c: A) =>
+    !(O.compare(a, b) <= 0 && O.compare(b, c) <= 0) || O.compare(a, c) <= 0
+}
+
+export const semigroup = {
+  associativity: <A>(S: Semigroup<A>, Eq: Setoid<A>) => (a: A, b: A, c: A) =>
+    Eq.equals(S.concat(S.concat(a, b), c), S.concat(a, S.concat(b, c)))
+}
+
+export const monoid = {
+  rightIdentity: <A>(M: Monoid<A>, Eq: Setoid<A>) => (a: A) => Eq.equals(M.concat(a, M.empty), a),
+  leftIdentity: <A>(M: Monoid<A>, Eq: Setoid<A>) => (a: A) => Eq.equals(M.concat(M.empty, a), a)
+}
+
+const allEquals = <A>(S: Setoid<A>) => (a: A, ...as: Array<A>): boolean => {
+  return as.every(item => S.equals(item, a))
+}
+
+export const semiring = {
+  addAssociativity: <A>(S: Semiring<A>, Eq: Setoid<A>) => (a: A, b: A, c: A) =>
+    Eq.equals(S.add(S.add(a, b), c), S.add(a, S.add(b, c))),
+  addIdentity: <A>(S: Semiring<A>, Eq: Setoid<A>) => (a: A) => allEquals(Eq)(a, S.add(a, S.zero), S.add(S.zero, a)),
+  commutativity: <A>(S: Semiring<A>, Eq: Setoid<A>) => (a: A, b: A) => Eq.equals(S.add(a, b), S.add(b, a)),
+  mulAssociativity: <A>(S: Semiring<A>, Eq: Setoid<A>) => (a: A, b: A, c: A) =>
+    Eq.equals(S.mul(S.mul(a, b), c), S.mul(a, S.mul(b, c))),
+  mulIdentity: <A>(S: Semiring<A>, Eq: Setoid<A>) => (a: A) => allEquals(Eq)(a, S.mul(a, S.one), S.mul(S.one, a)),
+  leftDistributivity: <A>(S: Semiring<A>, Eq: Setoid<A>) => (a: A, b: A, c: A) =>
+    Eq.equals(S.mul(a, S.add(b, c)), S.add(S.mul(a, b), S.mul(a, c))),
+  rightDistributivity: <A>(S: Semiring<A>, Eq: Setoid<A>) => (a: A, b: A, c: A) =>
+    Eq.equals(S.mul(S.add(a, b), c), S.add(S.mul(a, c), S.mul(b, c))),
+  annihilation: <A>(S: Semiring<A>, Eq: Setoid<A>) => (a: A) =>
+    allEquals(Eq)(S.zero, S.mul(a, S.zero), S.mul(S.zero, a))
+}
+
+export const ring = {
+  additiveInverse: <A>(R: Ring<A>, Eq: Setoid<A>) => (a: A) =>
+    allEquals(Eq)(R.sub(a, a), R.add(R.sub(R.zero, a), a), R.zero)
+}
+
+export const field = {
+  commutativity: <A>(F: Field<A>, S: Setoid<A>) => (a: A, b: A) => S.equals(F.mul(a, b), F.mul(b, a)),
+  integralDomain: <A>(F: Field<A>, S: Setoid<A>) => (a: A, b: A) =>
+    S.equals(a, F.zero) || S.equals(b, F.zero) || !S.equals(F.mul(a, b), F.zero),
+  nonNegativity: <A>(F: Field<A>, S: Setoid<A>) => (a: A) => S.equals(a, F.zero) || F.degree(a) >= 0,
+  quotient: <A>(F: Field<A>, S: Setoid<A>) => (a: A, b: A) => {
+    const q = F.div(a, b)
+    const r = F.mod(a, b)
+    return S.equals(b, F.zero) || S.equals(a, F.add(F.mul(q, b), r))
+  },
+  reminder: <A>(F: Field<A>, S: Setoid<A>) => (a: A, b: A) => {
+    const r = F.mod(a, b)
+    return S.equals(b, F.zero) || S.equals(r, F.zero) || F.degree(a) <= F.degree(b)
+  },
+  submultiplicative: <A>(F: Field<A>, S: Setoid<A>) => (a: A, b: A) =>
+    S.equals(a, F.zero) || S.equals(b, F.zero) || F.degree(a) <= F.degree(F.mul(a, b)),
+  inverse: <A>(F: Field<A>, S: Setoid<A>) => (a: A) => {
+    const i = F.div(F.one, a)
+    return S.equals(a, F.zero) || allEquals(S)(F.one, F.mul(i, a), F.mul(a, i))
+  }
+}
 
 export const functor = {
   identity: <F, A>(F: Functor<F>, S: Setoid<HKT<F, A>>) => (fa: HKT<F, A>) => S.equals(F.map(fa, a => a), fa),
