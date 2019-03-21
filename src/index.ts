@@ -363,12 +363,15 @@ export function monad<M>(M: Monad<M>, liftSetoid: <A>(Sa: Setoid<A>) => Setoid<H
   const afb: Function1<string, HKT<M, number>> = a => M.of(a.length)
   const bfc: Function1<number, HKT<M, boolean>> = b => M.of(b > 2)
   const associativity = fc.property(arbFa, laws.chain.associativity(M, Sc, afb, bfc))
+  const Sb = liftSetoid(setoidNumber)
+  const fab: HKT<M, Function1<string, number>> = M.of((a: string) => a.length)
+  const derivedAp = fc.property(arbFa, laws.chain.derivedAp(M, Sb, fab))
 
   fc.assert(associativity)
+  fc.assert(derivedAp)
 
   const arb = fc.string().map(M.of)
   const Sa = liftSetoid(setoidString)
-  const Sb = liftSetoid(setoidNumber)
   const leftIdentity = fc.property(fc.string(), laws.monad.leftIdentity(M, Sb, afb))
   const rightIdentity = fc.property(arb, laws.monad.rightIdentity(M, Sa))
   const ab: Function1<string, number> = a => a.length
