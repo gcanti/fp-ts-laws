@@ -26,14 +26,9 @@ import { Function1 } from 'fp-ts/lib/function'
  * @since 0.0.1
  */
 export const setoid = <A>(S: Setoid<A>, arb: fc.Arbitrary<A>): void => {
-  const reflexivity = fc.property(arb, a => S.equals(a, a))
-  const symmetry = fc.property(arb, arb, (a, b) => S.equals(a, b) === S.equals(b, a))
-  const transitivity = fc.property(
-    arb,
-    arb,
-    arb,
-    (a, b, c) => (S.equals(a, b) && S.equals(b, c)) === (S.equals(a, b) && S.equals(a, c))
-  )
+  const reflexivity = fc.property(arb, laws.setoid.reflexivity(S))
+  const symmetry = fc.property(arb, arb, laws.setoid.simmetry(S))
+  const transitivity = fc.property(arb, arb, arb, laws.setoid.transitivity(S))
   fc.assert(reflexivity)
   fc.assert(symmetry)
   fc.assert(transitivity)
@@ -45,19 +40,10 @@ export const setoid = <A>(S: Setoid<A>, arb: fc.Arbitrary<A>): void => {
  */
 export const ord = <A>(O: Ord<A>, arb: fc.Arbitrary<A>): void => {
   setoid(O, arb)
-  const totality = fc.property(arb, arb, (a, b) => O.compare(a, b) <= 0 || O.compare(b, a) <= 0)
-  const reflexivity = fc.property(arb, a => O.compare(a, a) <= 0)
-  const antisymmetry = fc.property(
-    arb,
-    arb,
-    (a, b) => (O.compare(a, b) <= 0 && O.compare(b, a) <= 0) === O.equals(a, b)
-  )
-  const transitivity = fc.property(
-    arb,
-    arb,
-    arb,
-    (a, b, c) => !(O.compare(a, b) <= 0 && O.compare(b, c) <= 0) || O.compare(a, c) <= 0
-  )
+  const totality = fc.property(arb, arb, laws.ord.totality(O))
+  const reflexivity = fc.property(arb, laws.ord.reflexivity(O))
+  const antisymmetry = fc.property(arb, arb, laws.ord.antisimmetry(O))
+  const transitivity = fc.property(arb, arb, arb, laws.ord.transitivity(O))
   fc.assert(totality)
   fc.assert(reflexivity)
   fc.assert(antisymmetry)
@@ -69,9 +55,7 @@ export const ord = <A>(O: Ord<A>, arb: fc.Arbitrary<A>): void => {
  * @since 0.0.1
  */
 export const semigroup = <A>(S: Semigroup<A>, Eq: Setoid<A>, arb: fc.Arbitrary<A>): void => {
-  const associativity = fc.property(arb, arb, arb, (a, b, c) =>
-    Eq.equals(S.concat(S.concat(a, b), c), S.concat(a, S.concat(b, c)))
-  )
+  const associativity = fc.property(arb, arb, arb, laws.semigroup.associativity(S, Eq))
   fc.assert(associativity)
 }
 
@@ -81,14 +65,10 @@ export const semigroup = <A>(S: Semigroup<A>, Eq: Setoid<A>, arb: fc.Arbitrary<A
  */
 export const monoid = <A>(M: Monoid<A>, Eq: Setoid<A>, arb: fc.Arbitrary<A>): void => {
   semigroup(M, Eq, arb)
-  const rightIdentity = fc.property(arb, a => Eq.equals(M.concat(a, M.empty), a))
-  const leftIdentity = fc.property(arb, a => Eq.equals(M.concat(M.empty, a), a))
+  const rightIdentity = fc.property(arb, laws.monoid.rightIdentity(M, Eq))
+  const leftIdentity = fc.property(arb, laws.monoid.leftIdentity(M, Eq))
   fc.assert(rightIdentity)
   fc.assert(leftIdentity)
-}
-
-const allEquals = <A>(S: Setoid<A>) => (a: A, ...as: Array<A>): boolean => {
-  return as.every(item => S.equals(item, a))
 }
 
 /**
@@ -96,23 +76,14 @@ const allEquals = <A>(S: Setoid<A>) => (a: A, ...as: Array<A>): boolean => {
  * @since 0.0.1
  */
 export const semiring = <A>(S: Semiring<A>, Eq: Setoid<A>, arb: fc.Arbitrary<A>, seed?: number): void => {
-  const allEqualsEq = allEquals(Eq)
-  const addAssociativity = fc.property(arb, arb, arb, (a, b, c) =>
-    Eq.equals(S.add(S.add(a, b), c), S.add(a, S.add(b, c)))
-  )
-  const addIdentity = fc.property(arb, a => allEqualsEq(a, S.add(a, S.zero), S.add(S.zero, a)))
-  const commutativity = fc.property(arb, arb, (a, b) => Eq.equals(S.add(a, b), S.add(b, a)))
-  const mulAssociativity = fc.property(arb, arb, arb, (a, b, c) =>
-    Eq.equals(S.mul(S.mul(a, b), c), S.mul(a, S.mul(b, c)))
-  )
-  const mulIdentity = fc.property(arb, a => allEqualsEq(a, S.mul(a, S.one), S.mul(S.one, a)))
-  const leftDistributivity = fc.property(arb, arb, arb, (a, b, c) =>
-    Eq.equals(S.mul(a, S.add(b, c)), S.add(S.mul(a, b), S.mul(a, c)))
-  )
-  const rightDistributivity = fc.property(arb, arb, arb, (a, b, c) =>
-    Eq.equals(S.mul(S.add(a, b), c), S.add(S.mul(a, c), S.mul(b, c)))
-  )
-  const annihilation = fc.property(arb, a => allEqualsEq(S.zero, S.mul(a, S.zero), S.mul(S.zero, a)))
+  const addAssociativity = fc.property(arb, arb, arb, laws.semiring.addAssociativity(S, Eq))
+  const addIdentity = fc.property(arb, laws.semiring.addIdentity(S, Eq))
+  const commutativity = fc.property(arb, arb, laws.semiring.commutativity(S, Eq))
+  const mulAssociativity = fc.property(arb, arb, arb, laws.semiring.mulAssociativity(S, Eq))
+  const mulIdentity = fc.property(arb, laws.semiring.mulIdentity(S, Eq))
+  const leftDistributivity = fc.property(arb, arb, arb, laws.semiring.leftDistributivity(S, Eq))
+  const rightDistributivity = fc.property(arb, arb, arb, laws.semiring.rightDistributivity(S, Eq))
+  const annihilation = fc.property(arb, laws.semiring.annihilation(S, Eq))
   fc.assert(addAssociativity, { seed })
   fc.assert(addIdentity, { seed })
   fc.assert(commutativity, { seed })
@@ -129,8 +100,7 @@ export const semiring = <A>(S: Semiring<A>, Eq: Setoid<A>, arb: fc.Arbitrary<A>,
  */
 export const ring = <A>(R: Ring<A>, S: Setoid<A>, arb: fc.Arbitrary<A>, seed?: number): void => {
   semiring(R, S, arb, seed)
-  const allEqualsEq = allEquals(S)
-  const additiveInverse = fc.property(arb, a => allEqualsEq(R.sub(a, a), R.add(R.sub(R.zero, a), a), R.zero))
+  const additiveInverse = fc.property(arb, laws.ring.additiveInverse(R, S))
   fc.assert(additiveInverse)
 }
 
@@ -139,36 +109,17 @@ export const ring = <A>(R: Ring<A>, S: Setoid<A>, arb: fc.Arbitrary<A>, seed?: n
  * @since 0.0.1
  */
 export const field = <A>(F: Field<A>, S: Setoid<A>, arb: fc.Arbitrary<A>, seed?: number): void => {
-  const allEqualsS = allEquals(S)
   ring(F, S, arb, seed)
   if (S.equals(F.zero, F.one)) {
     throw new Error(`one should not be equal to zero`)
   }
-  const commutativity = fc.property(arb, arb, (a, b) => S.equals(F.mul(a, b), F.mul(b, a)))
-  const integralDomain = fc.property(
-    arb,
-    arb,
-    (a, b) => S.equals(a, F.zero) || S.equals(b, F.zero) || !S.equals(F.mul(a, b), F.zero)
-  )
-  const nonNegativity = fc.property(arb, a => S.equals(a, F.zero) || F.degree(a) >= 0)
-  const quotient = fc.property(arb, arb, (a, b) => {
-    const q = F.div(a, b)
-    const r = F.mod(a, b)
-    return S.equals(b, F.zero) || S.equals(a, F.add(F.mul(q, b), r))
-  })
-  const reminder = fc.property(arb, arb, (a, b) => {
-    const r = F.mod(a, b)
-    return S.equals(b, F.zero) || S.equals(r, F.zero) || F.degree(a) <= F.degree(b)
-  })
-  const submultiplicative = fc.property(
-    arb,
-    arb,
-    (a, b) => S.equals(a, F.zero) || S.equals(b, F.zero) || F.degree(a) <= F.degree(F.mul(a, b))
-  )
-  const inverse = fc.property(arb, a => {
-    const i = F.div(F.one, a)
-    return S.equals(a, F.zero) || allEqualsS(F.one, F.mul(i, a), F.mul(a, i))
-  })
+  const commutativity = fc.property(arb, arb, laws.field.commutativity(F, S))
+  const integralDomain = fc.property(arb, arb, laws.field.integralDomain(F, S))
+  const nonNegativity = fc.property(arb, laws.field.nonNegativity(F, S))
+  const quotient = fc.property(arb, arb, laws.field.quotient(F, S))
+  const reminder = fc.property(arb, arb, laws.field.reminder(F, S))
+  const submultiplicative = fc.property(arb, arb, laws.field.submultiplicative(F, S))
+  const inverse = fc.property(arb, laws.field.inverse(F, S))
   fc.assert(commutativity, { seed })
   fc.assert(integralDomain, { seed })
   fc.assert(nonNegativity, { seed })
