@@ -1,6 +1,6 @@
 {
   "name": "fp-ts-laws",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "fp-ts type class laws for property based testing",
   "files": [
     "lib"
