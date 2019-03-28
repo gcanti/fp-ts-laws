@@ -1,7 +1,7 @@
 import * as fc from 'fast-check'
 import * as E from 'fp-ts/lib/Either'
 import { fieldNumber } from 'fp-ts/lib/Field'
-import { monoidSum, monoidString } from 'fp-ts/lib/Monoid'
+import { monoidString, monoidSum } from 'fp-ts/lib/Monoid'
 import * as O from 'fp-ts/lib/Option'
 import { ordNumber } from 'fp-ts/lib/Ord'
 import { Semigroup } from 'fp-ts/lib/Semigroup'
@@ -64,18 +64,17 @@ describe('ring', () => {
 
 describe('functor', () => {
   it('should test Functor laws', () => {
-    laws.functor(O.option, getOption, O.getSetoid)
-    laws.functor(E.either, arb => getEither(fc.string(), arb), S => E.getSetoid(setoidString, S))
-    laws.functor(V.validation, arb => getValidation(fc.string(), arb), S => V.getSetoid(setoidString, S))
+    laws.functor(O.option)(getOption, O.getSetoid)
+    laws.functor(E.either)(arb => getEither(fc.string(), arb), S => E.getSetoid(setoidString, S))
+    laws.functor(V.validation)(arb => getValidation(fc.string(), arb), S => V.getSetoid(setoidString, S))
   })
 })
 
 describe('apply', () => {
   it('should test Apply laws', () => {
-    laws.apply(O.option, getOption, O.getSetoid)
-    laws.apply(E.either, arb => getEither(fc.string(), arb), S => E.getSetoid(setoidString, S))
-    laws.apply(
-      V.getApplicative(monoidString),
+    laws.apply(O.option)(getOption, O.getSetoid)
+    laws.apply(E.either)(arb => getEither(fc.string(), arb), S => E.getSetoid(setoidString, S))
+    laws.apply(V.getApplicative(monoidString))(
       arb => getValidation(fc.string(), arb),
       S => V.getSetoid(setoidString, S)
     )
@@ -84,10 +83,9 @@ describe('apply', () => {
 
 describe('applicative', () => {
   it('should test Applicative laws', () => {
-    laws.applicative(O.option, getOption, O.getSetoid)
-    laws.applicative(E.either, arb => getEither(fc.string(), arb), S => E.getSetoid(setoidString, S))
-    laws.applicative(
-      V.getApplicative(monoidString),
+    laws.applicative(O.option)(getOption, O.getSetoid)
+    laws.applicative(E.either)(arb => getEither(fc.string(), arb), S => E.getSetoid(setoidString, S))
+    laws.applicative(V.getApplicative(monoidString))(
       arb => getValidation(fc.string(), arb),
       S => V.getSetoid(setoidString, S)
     )
@@ -96,8 +94,8 @@ describe('applicative', () => {
 
 describe('monad', () => {
   it('should test Monad laws', () => {
-    laws.monad(O.option, O.getSetoid)
-    laws.monad(E.either, S => E.getSetoid(setoidString, S))
-    laws.monad(V.getMonad(monoidString), S => V.getSetoid(setoidString, S))
+    laws.monad(O.option)(O.getSetoid)
+    laws.monad(E.either)(S => E.getSetoid(setoidString, S))
+    laws.monad(V.getMonad(monoidString))(S => V.getSetoid(setoidString, S))
   })
 })
