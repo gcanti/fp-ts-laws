@@ -30,38 +30,44 @@ Tests the `Applicative` laws
 
 ```ts
 export function applicative<F extends URIS3>(
-  F: Applicative3<F>,
-  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, any, any, A>>,
-  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, any, any, A>>
-): void
+  F: Applicative3<F>
+): <U, L>(
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, U, L, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, U, L, A>>
+) => void
 export function applicative<F extends URIS3, U, L>(
-  F: Applicative3C<F, U, L>,
-  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, any, any, A>>,
-  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, any, any, A>>
-): void
+  F: Applicative3C<F, U, L>
+): (
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, U, L, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, U, L, A>>
+) => void
 export function applicative<F extends URIS2>(
-  F: Applicative2<F>,
-  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, any, A>>,
-  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, any, A>>
-): void
+  F: Applicative2<F>
+): <L>(
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, L, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, L, A>>
+) => void
 export function applicative<F extends URIS2, L>(
-  F: Applicative2C<F, L>,
-  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, any, A>>,
-  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, any, A>>
-): void
+  F: Applicative2C<F, L>
+): (
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, L, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, L, A>>
+) => void
 export function applicative<F extends URIS>(
-  F: Applicative1<F>,
+  F: Applicative1<F>
+): (
   lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type<F, A>>,
   liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type<F, A>>
-): void
+) => void
 export function applicative<F>(
-  F: Applicative<F>,
+  F: Applicative<F>
+): (
   lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<HKT<F, A>>,
   liftSetoid: <A>(Sa: Setoid<A>) => Setoid<HKT<F, A>>
-): void { ... }
+) => void { ... }
 ```
 
-Added in v0.0.2
+Added in v0.1.0
 
 # apply (function)
 
@@ -71,38 +77,44 @@ Tests the `Apply` laws
 
 ```ts
 export function apply<F extends URIS3>(
-  F: Apply3<F>,
-  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, any, any, A>>,
-  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, any, any, A>>
-): void
+  F: Apply3<F>
+): <U, L>(
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, U, L, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, U, L, A>>
+) => void
 export function apply<F extends URIS3, U, L>(
-  F: Apply3C<F, U, L>,
-  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, any, any, A>>,
-  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, any, any, A>>
-): void
+  F: Apply3C<F, U, L>
+): (
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, U, L, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, U, L, A>>
+) => void
 export function apply<F extends URIS2>(
-  F: Apply2<F>,
-  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, any, A>>,
-  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, any, A>>
-): void
+  F: Apply2<F>
+): <L>(
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, L, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, L, A>>
+) => void
 export function apply<F extends URIS2, L>(
-  F: Apply2C<F, L>,
-  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, any, A>>,
-  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, any, A>>
-): void
+  F: Apply2C<F, L>
+): (
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, L, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, L, A>>
+) => void
 export function apply<F extends URIS>(
-  F: Apply1<F>,
+  F: Apply1<F>
+): (
   lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type<F, A>>,
   liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type<F, A>>
-): void
+) => void
 export function apply<F>(
-  F: Apply<F>,
+  F: Apply<F>
+): (
   lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<HKT<F, A>>,
   liftSetoid: <A>(Sa: Setoid<A>) => Setoid<HKT<F, A>>
-): void { ... }
+) => void { ... }
 ```
 
-Added in v0.0.2
+Added in v0.1.0
 
 # field (function)
 
@@ -124,38 +136,44 @@ Tests the `Functor` laws
 
 ```ts
 export function functor<F extends URIS3>(
-  F: Functor3<F>,
-  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, any, any, A>>,
-  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, any, any, A>>
-): void
+  F: Functor3<F>
+): <U, L>(
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, U, L, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, U, L, A>>
+) => void
 export function functor<F extends URIS3, U, L>(
-  F: Functor3C<F, U, L>,
-  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, any, any, A>>,
-  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, any, any, A>>
-): void
+  F: Functor3C<F, U, L>
+): (
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type3<F, U, L, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<F, U, L, A>>
+) => void
 export function functor<F extends URIS2>(
-  F: Functor2<F>,
-  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, any, A>>,
-  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, any, A>>
-): void
+  F: Functor2<F>
+): <L>(
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, L, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, L, A>>
+) => void
 export function functor<F extends URIS2, L>(
-  F: Functor2C<F, L>,
-  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, any, A>>,
-  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, any, A>>
-): void
+  F: Functor2C<F, L>
+): (
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type2<F, L, A>>,
+  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<F, L, A>>
+) => void
 export function functor<F extends URIS>(
-  F: Functor1<F>,
+  F: Functor1<F>
+): (
   lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Type<F, A>>,
   liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type<F, A>>
-): void
+) => void
 export function functor<F>(
-  F: Functor<F>,
+  F: Functor<F>
+): (
   lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<HKT<F, A>>,
   liftSetoid: <A>(Sa: Setoid<A>) => Setoid<HKT<F, A>>
-): void { ... }
+) => void { ... }
 ```
 
-Added in v0.0.2
+Added in v0.1.0
 
 # monad (function)
 
@@ -165,23 +183,22 @@ Tests the `Monad` laws
 
 ```ts
 export function monad<M extends URIS3>(
-  M: Monad3<M>,
-  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<M, any, any, A>>
-): void
+  M: Monad3<M>
+): <U, L>(liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<M, U, L, A>>) => void
 export function monad<M extends URIS3, U, L>(
-  M: Monad3C<M, U, L>,
-  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<M, any, any, A>>
-): void
-export function monad<M extends URIS2>(M: Monad2<M>, liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<M, any, A>>): void
+  M: Monad3C<M, U, L>
+): (liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type3<M, U, L, A>>) => void
+export function monad<M extends URIS2>(
+  M: Monad2<M>
+): <L>(liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<M, L, A>>) => void
 export function monad<M extends URIS2, L>(
-  M: Monad2C<M, L>,
-  liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<M, L, A>>
-): void
-export function monad<M extends URIS>(M: Monad1<M>, liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type<M, A>>): void
-export function monad<M>(M: Monad<M>, liftSetoid: <A>(Sa: Setoid<A>) => Setoid<HKT<M, A>>): void { ... }
+  M: Monad2C<M, L>
+): (liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type2<M, L, A>>) => void
+export function monad<M extends URIS>(M: Monad1<M>): (liftSetoid: <A>(Sa: Setoid<A>) => Setoid<Type<M, A>>) => void
+export function monad<M>(M: Monad<M>): (liftSetoid: <A>(Sa: Setoid<A>) => Setoid<HKT<M, A>>) => void { ... }
 ```
 
-Added in v0.0.2
+Added in v0.1.0
 
 # monoid (function)
 
