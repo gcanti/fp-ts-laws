@@ -5,16 +5,14 @@ import { monoidString, monoidSum } from 'fp-ts/lib/Monoid'
 import * as O from 'fp-ts/lib/Option'
 import { ordNumber } from 'fp-ts/lib/Ord'
 import { Semigroup } from 'fp-ts/lib/Semigroup'
-import { setoidNumber, setoidString } from 'fp-ts/lib/Setoid'
-import * as V from 'fp-ts/lib/Validation'
+import { eqNumber, eqString } from 'fp-ts/lib/Eq'
 import * as laws from '../src'
 import { getEither } from '../src/Either'
 import { getOption } from '../src/Option'
-import { getValidation } from '../src/Validation'
 
-describe('setoid', () => {
-  it('should test Setoid laws', () => {
-    laws.setoid(setoidNumber, fc.float())
+describe('eq', () => {
+  it('should test Eq laws', () => {
+    laws.eq(eqNumber, fc.float())
   })
 })
 
@@ -29,27 +27,27 @@ describe('my semigroup instance', () => {
     const semigroupSpace: Semigroup<string> = {
       concat: (x, y) => x + ' ' + y
     }
-    laws.semigroup(semigroupSpace, setoidString, fc.string())
+    laws.semigroup(semigroupSpace, eqString, fc.string())
   })
 })
 
 describe('monoid', () => {
   it('should test Monoid laws', () => {
-    laws.monoid(monoidSum, setoidNumber, fc.float())
+    laws.monoid(monoidSum, eqNumber, fc.float())
   })
 })
 
 describe('semiring', () => {
   it('should test Semiring laws', () => {
     const seed = 1552808164540
-    laws.semiring(fieldNumber, setoidNumber, fc.float(), seed)
+    laws.semiring(fieldNumber, eqNumber, fc.float(), seed)
   })
 })
 
 describe('ring', () => {
   it('should test Ring laws', () => {
     const seed = 1552808164540
-    laws.ring(fieldNumber, setoidNumber, fc.float(), seed)
+    laws.ring(fieldNumber, eqNumber, fc.float(), seed)
   })
 })
 
@@ -58,44 +56,37 @@ describe('ring', () => {
 //     const seed = Date.now()
 //     // tslint:disable-next-line: no-console
 //     console.log(seed)
-//     laws.field(fieldNumber, setoidNumber, fc.float(), seed)
+//     laws.field(fieldNumber, eqNumber, fc.float(), seed)
 //   })
 // })
 
 describe('functor', () => {
   it('should test Functor laws', () => {
-    laws.functor(O.option)(getOption, O.getSetoid)
-    laws.functor(E.either)(arb => getEither(fc.string(), arb), S => E.getSetoid(setoidString, S))
-    laws.functor(V.validation)(arb => getValidation(fc.string(), arb), S => V.getSetoid(setoidString, S))
+    laws.functor(O.option)(getOption, O.getEq)
+    laws.functor(E.either)(arb => getEither(fc.string(), arb), S => E.getEq(eqString, S))
   })
 })
 
 describe('apply', () => {
   it('should test Apply laws', () => {
-    laws.apply(O.option)(getOption, O.getSetoid)
-    laws.apply(E.either)(arb => getEither(fc.string(), arb), S => E.getSetoid(setoidString, S))
-    laws.apply(V.getApplicative(monoidString))(
-      arb => getValidation(fc.string(), arb),
-      S => V.getSetoid(setoidString, S)
-    )
+    laws.apply(O.option)(getOption, O.getEq)
+    laws.apply(E.either)(arb => getEither(fc.string(), arb), S => E.getEq(eqString, S))
+    laws.apply(E.getValidation(monoidString))(arb => getEither(fc.string(), arb), S => E.getEq(eqString, S))
   })
 })
 
 describe('applicative', () => {
   it('should test Applicative laws', () => {
-    laws.applicative(O.option)(getOption, O.getSetoid)
-    laws.applicative(E.either)(arb => getEither(fc.string(), arb), S => E.getSetoid(setoidString, S))
-    laws.applicative(V.getApplicative(monoidString))(
-      arb => getValidation(fc.string(), arb),
-      S => V.getSetoid(setoidString, S)
-    )
+    laws.applicative(O.option)(getOption, O.getEq)
+    laws.applicative(E.either)(arb => getEither(fc.string(), arb), S => E.getEq(eqString, S))
+    laws.applicative(E.getValidation(monoidString))(arb => getEither(fc.string(), arb), S => E.getEq(eqString, S))
   })
 })
 
 describe('monad', () => {
   it('should test Monad laws', () => {
-    laws.monad(O.option)(O.getSetoid)
-    laws.monad(E.either)(S => E.getSetoid(setoidString, S))
-    laws.monad(V.getMonad(monoidString))(S => V.getSetoid(setoidString, S))
+    laws.monad(O.option)(O.getEq)
+    laws.monad(E.either)(S => E.getEq(eqString, S))
+    laws.monad(E.getValidation(monoidString))(S => E.getEq(eqString, S))
   })
 })

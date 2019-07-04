@@ -1,6 +1,6 @@
 {
   "name": "fp-ts-laws",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "fp-ts type class laws for property based testing",
   "files": [
     "lib"
@@ -15,6 +15,7 @@
     "test": "npm run prettier && npm run jest && npm run docs",
     "clean": "rimraf rm -rf lib/*",
     "build": "npm run clean && tsc",
+    "prepublish": "npm run build",
     "mocha": "mocha -r ts-node/register test/*.ts",
     "docs": "docs-ts"
   },
@@ -29,25 +30,25 @@
   },
   "homepage": "https://github.com/gcanti/fp-ts-laws",
   "dependencies": {
-    "fast-check": "^1.12.0"
+    "fast-check": "^1.16.0"
   },
   "peerDependencies": {
-    "fp-ts": "^1.14.4"
+    "fp-ts": "^2.0.0"
   },
   "devDependencies": {
     "@types/jest": "^23.3.13",
     "@types/node": "^10.12.18",
-    "docs-ts": "0.0.1",
-    "fp-ts": "^1.14.4",
-    "jest": "^24.5.0",
+    "docs-ts": "^0.1.0",
+    "fp-ts": "^2.0.0",
+    "jest": "^24.8.0",
     "mocha": "^5.2.0",
     "prettier": "^1.16.4",
     "rimraf": "^2.6.2",
-    "ts-jest": "^23.10.5",
+    "ts-jest": "^24.0.2",
     "ts-node": "^8.0.2",
     "tslint": "^5.12.1",
     "tslint-config-standard": "^8.0.1",
-    "typescript": "^3.3.3333"
+    "typescript": "^3.5.2"
   },
   "tags": [
     "fp-ts",

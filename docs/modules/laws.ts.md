@@ -11,6 +11,7 @@ parent: Modules
 - [applicative (constant)](#applicative-constant)
 - [apply (constant)](#apply-constant)
 - [chain (constant)](#chain-constant)
+- [eq (constant)](#eq-constant)
 - [field (constant)](#field-constant)
 - [functor (constant)](#functor-constant)
 - [monad (constant)](#monad-constant)
@@ -19,7 +20,6 @@ parent: Modules
 - [ring (constant)](#ring-constant)
 - [semigroup (constant)](#semigroup-constant)
 - [semiring (constant)](#semiring-constant)
-- [setoid (constant)](#setoid-constant)
 
 ---
 
@@ -45,6 +45,14 @@ export const apply = ...
 
 ```ts
 export const chain = ...
+```
+
+# eq (constant)
+
+**Signature**
+
+```ts
+export const eq = ...
 ```
 
 # field (constant)
@@ -109,12 +117,4 @@ export const semigroup = ...
 
 ```ts
 export const semiring = ...
-```
-
-# setoid (constant)
-
-**Signature**
-
-```ts
-export const setoid = ...
 ```
