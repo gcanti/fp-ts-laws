@@ -164,10 +164,11 @@ export function functor<F>(
   return (lift, liftEq) => {
     const arb = lift(fc.string())
     const Sa = liftEq(eqString)
-    const Sc = liftEq(eqBoolean)
+    const Sc = liftEq(eqNumber)
     const identity = fc.property(arb, laws.functor.identity(F, Sa))
-    const ab = (s: string) => s.length
-    const bc = (n: number) => n > 2
+    const ab = (s: string): number | undefined | null => (s.length === 1 ? undefined : s.length === 2 ? null : s.length)
+    const bc = (n: number | undefined | null): number => (n === undefined ? 1 : n === null ? 2 : n * 2)
+
     const composition = fc.property(arb, laws.functor.composition(F, Sc, ab, bc))
 
     fc.assert(identity)
