@@ -4,48 +4,55 @@ nav_order: 4
 parent: Modules
 ---
 
+## Option overview
+
+Added in v0.0.2
+
 ---
 
 <h2 class="text-delta">Table of contents</h2>
 
-- [getNone (function)](#getnone-function)
-- [getOption (function)](#getoption-function)
-- [getSome (function)](#getsome-function)
+- [utils](#utils)
+  - [getNone](#getnone)
+  - [getOption](#getoption)
+  - [getSome](#getsome)
 
 ---
 
-# getNone (function)
+# utils
+
+## getNone
 
 Returns an `Arbitrary` that yelds only `none`s
 
 **Signature**
 
 ```ts
-export function getNone<A>(): fc.Arbitrary<Option<A>> { ... }
+export declare function getNone<A>(): fc.Arbitrary<Option<A>>
 ```
 
 Added in v0.0.2
 
-# getOption (function)
+## getOption
 
 Returns an `Arbitrary` that yelds both `none`s and `some`s
 
 **Signature**
 
 ```ts
-export function getOption<A>(arb: fc.Arbitrary<A>): fc.Arbitrary<Option<A>> { ... }
+export declare function getOption<A>(arb: fc.Arbitrary<A>): fc.Arbitrary<Option<A>>
 ```
 
 Added in v0.0.2
 
-# getSome (function)
+## getSome
 
 Returns an `Arbitrary` that yelds only `some`s
 
 **Signature**
 
 ```ts
-export function getSome<A>(arb: fc.Arbitrary<A>): fc.Arbitrary<Option<A>> { ... }
+export declare function getSome<A>(arb: fc.Arbitrary<A>): fc.Arbitrary<Option<A>>
 ```
 
 Added in v0.0.2
