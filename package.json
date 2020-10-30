@@ -1,6 +1,6 @@
 {
   "name": "fp-ts-laws",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "fp-ts type class laws for property based testing",
   "files": [
     "lib"
@@ -29,16 +29,16 @@
     "url": "https://github.com/gcanti/fp-ts-laws/issues"
   },
   "homepage": "https://github.com/gcanti/fp-ts-laws",
-  "dependencies": {
-    "fast-check": "^1.16.0"
-  },
+  "dependencies": {},
   "peerDependencies": {
-    "fp-ts": "^2.0.0"
+    "fp-ts": "^2.0.0",
+    "fast-check": "^2.6.0"
   },
   "devDependencies": {
     "@types/jest": "^23.3.13",
     "@types/node": "^10.12.18",
-    "docs-ts": "^0.1.0",
+    "docs-ts": "^0.5.2",
+    "fast-check": "^2.6.0",
     "fp-ts": "^2.0.0",
     "jest": "^24.8.0",
     "mocha": "^5.2.0",

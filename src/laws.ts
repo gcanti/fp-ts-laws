@@ -1,3 +1,6 @@
+/**
+ * @since 0.1.0
+ */
 import { Eq } from 'fp-ts/lib/Eq'
 import { Functor } from 'fp-ts/lib/Functor'
 import { HKT } from 'fp-ts/lib/HKT'
@@ -13,6 +16,9 @@ import { Ring } from 'fp-ts/lib/Ring'
 import { Field } from 'fp-ts/lib/Field'
 import { FunctionN } from 'fp-ts/lib/function'
 
+/**
+ * @since 0.1.0
+ */
 export const eq = {
   reflexivity: <A>(E: Eq<A>) => (a: A): boolean => {
     return E.equals(a, a)
@@ -25,6 +31,9 @@ export const eq = {
   }
 }
 
+/**
+ * @since 0.1.0
+ */
 export const ord = {
   totality: <A>(O: Ord<A>) => (a: A, b: A): boolean => {
     return O.compare(a, b) <= 0 || O.compare(b, a) <= 0
@@ -40,12 +49,18 @@ export const ord = {
   }
 }
 
+/**
+ * @since 0.1.0
+ */
 export const semigroup = {
   associativity: <A>(S: Semigroup<A>, E: Eq<A>) => (a: A, b: A, c: A): boolean => {
     return E.equals(S.concat(S.concat(a, b), c), S.concat(a, S.concat(b, c)))
   }
 }
 
+/**
+ * @since 0.1.0
+ */
 export const monoid = {
   rightIdentity: <A>(M: Monoid<A>, E: Eq<A>) => (a: A): boolean => {
     return E.equals(M.concat(a, M.empty), a)
@@ -59,6 +74,9 @@ const allEquals = <A>(E: Eq<A>) => (a: A, ...as: Array<A>): boolean => {
   return as.every(item => E.equals(item, a))
 }
 
+/**
+ * @since 0.1.0
+ */
 export const semiring = {
   addAssociativity: <A>(S: Semiring<A>, E: Eq<A>) => (a: A, b: A, c: A): boolean => {
     return E.equals(S.add(S.add(a, b), c), S.add(a, S.add(b, c)))
@@ -86,12 +104,18 @@ export const semiring = {
   }
 }
 
+/**
+ * @since 0.1.0
+ */
 export const ring = {
   additiveInverse: <A>(R: Ring<A>, E: Eq<A>) => (a: A): boolean => {
     return allEquals(E)(R.sub(a, a), R.add(R.sub(R.zero, a), a), R.zero)
   }
 }
 
+/**
+ * @since 0.1.0
+ */
 export const field = {
   commutativity: <A>(F: Field<A>, S: Eq<A>) => (a: A, b: A): boolean => {
     return S.equals(F.mul(a, b), F.mul(b, a))
@@ -120,6 +144,9 @@ export const field = {
   }
 }
 
+/**
+ * @since 0.1.0
+ */
 export const functor = {
   identity: <F, A>(F: Functor<F>, S: Eq<HKT<F, A>>) => (fa: HKT<F, A>): boolean => {
     return S.equals(F.map(fa, a => a), fa)
@@ -131,6 +158,9 @@ export const functor = {
   }
 }
 
+/**
+ * @since 0.1.0
+ */
 export const apply = {
   associativeComposition: <F, A, B, C>(F: Apply<F>, S: Eq<HKT<F, C>>) => (
     fa: HKT<F, A>,
@@ -144,6 +174,9 @@ export const apply = {
   }
 }
 
+/**
+ * @since 0.1.0
+ */
 export const applicative = {
   identity: <F, A>(F: Applicative<F>, S: Eq<HKT<F, A>>) => (fa: HKT<F, A>): boolean => {
     return S.equals(F.ap(F.of((a: A) => a), fa), fa)
@@ -159,6 +192,9 @@ export const applicative = {
   }
 }
 
+/**
+ * @since 0.1.0
+ */
 export const chain = {
   associativity: <F, A, B, C>(
     F: Chain<F>,
@@ -173,6 +209,9 @@ export const chain = {
   }
 }
 
+/**
+ * @since 0.1.0
+ */
 export const monad = {
   leftIdentity: <M, A, B>(M: Monad<M>, S: Eq<HKT<M, B>>, afb: FunctionN<[A], HKT<M, B>>) => (a: A): boolean => {
     return S.equals(M.chain(M.of(a), afb), afb(a))

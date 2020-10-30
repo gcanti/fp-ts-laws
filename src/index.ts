@@ -1,3 +1,6 @@
+/**
+ * @since 0.0.1
+ */
 import * as fc from 'fast-check'
 import { Applicative, Applicative1, Applicative2, Applicative2C, Applicative3 } from 'fp-ts/lib/Applicative'
 import { Apply, Apply1, Apply2, Apply2C, Apply3 } from 'fp-ts/lib/Apply'
@@ -15,6 +18,7 @@ import * as laws from './laws'
 
 /**
  * Tests the `Eq` laws
+ *
  * @since 0.0.1
  */
 export const eq = <A>(E: Eq<A>, arb: fc.Arbitrary<A>): void => {
@@ -28,6 +32,7 @@ export const eq = <A>(E: Eq<A>, arb: fc.Arbitrary<A>): void => {
 
 /**
  * Tests the `Ord` laws
+ *
  * @since 0.0.1
  */
 export const ord = <A>(O: Ord<A>, arb: fc.Arbitrary<A>): void => {
@@ -65,6 +70,7 @@ export const semigroup = <A>(S: Semigroup<A>, E: Eq<A>, arb: fc.Arbitrary<A>): v
 
 /**
  * Tests the `Monoid` laws
+ *
  * @since 0.0.1
  */
 export const monoid = <A>(M: Monoid<A>, E: Eq<A>, arb: fc.Arbitrary<A>): void => {
@@ -77,6 +83,7 @@ export const monoid = <A>(M: Monoid<A>, E: Eq<A>, arb: fc.Arbitrary<A>): void =>
 
 /**
  * Tests the `Semiring` laws
+ *
  * @since 0.0.1
  */
 export const semiring = <A>(S: Semiring<A>, E: Eq<A>, arb: fc.Arbitrary<A>, seed?: number): void => {
@@ -100,6 +107,7 @@ export const semiring = <A>(S: Semiring<A>, E: Eq<A>, arb: fc.Arbitrary<A>, seed
 
 /**
  * Tests the `Ring` laws
+ *
  * @since 0.0.1
  */
 export const ring = <A>(R: Ring<A>, S: Eq<A>, arb: fc.Arbitrary<A>, seed?: number): void => {
@@ -110,6 +118,7 @@ export const ring = <A>(R: Ring<A>, S: Eq<A>, arb: fc.Arbitrary<A>, seed?: numbe
 
 /**
  * Tests the `Field` laws
+ *
  * @since 0.0.1
  */
 export const field = <A>(F: Field<A>, S: Eq<A>, arb: fc.Arbitrary<A>, seed?: number): void => {
@@ -135,6 +144,7 @@ export const field = <A>(F: Field<A>, S: Eq<A>, arb: fc.Arbitrary<A>, seed?: num
 
 /**
  * Tests the `Functor` laws
+ *
  * @since 0.1.0
  */
 export function functor<F extends URIS3>(
@@ -178,6 +188,7 @@ export function functor<F>(
 
 /**
  * Tests the `Apply` laws
+ *
  * @since 0.1.0
  */
 export function apply<F extends URIS3>(
@@ -220,6 +231,7 @@ export function apply<F>(
 
 /**
  * Tests the `Applicative` laws
+ *
  * @since 0.1.0
  */
 export function applicative<F extends URIS3>(
@@ -269,6 +281,7 @@ export function applicative<F>(
 
 /**
  * Tests the `Monad` laws
+ *
  * @since 0.1.0
  */
 export function monad<M extends URIS3>(M: Monad3<M>): <U, L>(liftEq: <A>(Sa: Eq<A>) => Eq<Kind3<M, U, L, A>>) => void
