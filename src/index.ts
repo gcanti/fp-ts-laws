@@ -9,6 +9,7 @@ import { Field } from 'fp-ts/lib/Field'
 import { Functor, Functor1, Functor2, Functor2C, Functor3 } from 'fp-ts/lib/Functor'
 import { HKT, Kind, Kind2, Kind3, URIS, URIS2, URIS3 } from 'fp-ts/lib/HKT'
 import { Monad, Monad1, Monad2, Monad2C, Monad3 } from 'fp-ts/lib/Monad'
+import { Traversable, Traversable1, Traversable2, Traversable2C, Traversable3 } from 'fp-ts/lib/Traversable'
 import { Monoid } from 'fp-ts/lib/Monoid'
 import { Ord } from 'fp-ts/lib/Ord'
 import { Ring } from 'fp-ts/lib/Ring'
@@ -316,5 +317,40 @@ export function monad<M>(M: Monad<M>): (liftEq: <A>(Sa: Eq<A>) => Eq<HKT<M, A>>)
     fc.assert(leftIdentity)
     fc.assert(rightIdentity)
     fc.assert(derivedMap)
+  }
+}
+
+export function traversable<T extends URIS3>(
+  T: Traversable3<T>
+): <U, L>(
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Kind3<T, U, L, A>>,
+  liftEq: <A>(Sa: Eq<A>) => Eq<Kind3<T, U, L, A>>
+) => void
+export function traversable<T extends URIS2>(
+  T: Traversable2<T>
+): <L>(
+  lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Kind2<T, L, A>>,
+  liftEq: <A>(Sa: Eq<A>) => Eq<Kind2<T, L, A>>
+) => void
+export function traversable<T extends URIS2, L>(
+  T: Traversable2C<T, L>
+): (lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Kind2<T, L, A>>, liftEq: <A>(Sa: Eq<A>) => Eq<Kind2<T, L, A>>) => void
+export function traversable<T extends URIS>(
+  T: Traversable1<T>
+): (lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<Kind<T, A>>, liftEq: <A>(Sa: Eq<A>) => Eq<Kind<T, A>>) => void
+export function traversable<T>(
+  T: Traversable<T>
+): (lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<HKT<T, A>>, liftEq: <A>(Sa: Eq<A>) => Eq<HKT<T, A>>) => void
+export function traversable<T>(
+  T: Traversable<T>
+): (lift: <A>(a: fc.Arbitrary<A>) => fc.Arbitrary<HKT<T, A>>, liftEq: <A>(Sa: Eq<A>) => Eq<HKT<T, A>>) => void {
+  const functorT = functor(T)
+  return (lift, liftEq) => {
+    functorT(lift, liftEq)
+    const Sa = liftEq(eqString)
+    const identity = fc.property(lift(fc.string()), laws.traversable.identity(T, Sa))
+    // const composition = ??
+    fc.assert(identity)
+    // fc.assert(composition)
   }
 }

@@ -90,3 +90,10 @@ describe('monad', () => {
     laws.monad(E.getValidation(monoidString))(S => E.getEq(eqString, S))
   })
 })
+
+describe('traversable', () => {
+  it('should test Traversable laws', () => {
+    laws.traversable(O.option)(getOption, O.getEq)
+    laws.traversable(E.either)(arb => getEither(fc.string(), arb), S => E.getEq(eqString, S))
+  })
+})
