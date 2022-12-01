@@ -1,3 +1,9 @@
+<p align="center">
+  <a href="https://github.com/gcanti/fp-ts-laws/actions">
+    <img src="https://github.com/gcanti/fp-ts-laws/actions/workflows/main.yml/badge.svg?branch=master" alt="build status" height="20">
+  </a>
+</p>
+
 [fp-ts](https://github.com/gcanti/fp-ts) type class laws for property based testing
 
 Usage of [fast-check](https://github.com/dubzzz/fast-check) is required.
