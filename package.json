@@ -29,17 +29,16 @@
     "url": "https://github.com/gcanti/fp-ts-laws/issues"
   },
   "homepage": "https://github.com/gcanti/fp-ts-laws",
-  "dependencies": {},
   "peerDependencies": {
-    "fp-ts": "^2.0.0",
-    "fast-check": "^2.6.0"
+    "fast-check": "^2.6.0",
+    "fp-ts": "^2.0.0"
   },
   "devDependencies": {
     "@types/jest": "^23.3.13",
     "@types/node": "^10.12.18",
     "docs-ts": "^0.5.2",
     "fast-check": "^2.6.0",
-    "fp-ts": "^2.0.0",
+    "fp-ts": "^2.16.1",
     "jest": "^24.8.0",
     "mocha": "^5.2.0",
     "prettier": "^1.16.4",

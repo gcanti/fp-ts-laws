@@ -53,8 +53,8 @@ export const ord = <A>(O: Ord<A>, arb: fc.Arbitrary<A>): void => {
  * @example
  * import * as laws from 'fp-ts-laws'
  * import * as fc from 'fast-check'
- * import { Semigroup } from 'fp-ts/lib/Semigroup'
- * import { eqString } from 'fp-ts/lib/Eq'
+ * import { Semigroup } from 'fp-ts/Semigroup'
+ * import { eqString } from 'fp-ts/Eq'
  *
  * const semigroupSpace: Semigroup<string> = {
  *   concat: (x, y) => x + ' ' + y
