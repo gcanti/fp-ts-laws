@@ -13,8 +13,8 @@ Usage of [fast-check](https://github.com/dubzzz/fast-check) is required.
 import * as laws from 'fp-ts-laws'
 import * as fc from 'fast-check'
 
-import { Semigroup } from 'fp-ts/lib/Semigroup'
-import { setoidString } from 'fp-ts/lib/Setoid'
+import { Semigroup } from 'fp-ts/Semigroup'
+import { setoidString } from 'fp-ts/Setoid'
 
 describe('my semigroup instance', () => {
   it('should test Semigroup laws', () => {
